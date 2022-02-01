@@ -1,0 +1,29 @@
+version: '3.3'
+services:
+    postgres-flask:
+        container_name: postgres-flask
+        environment:
+            - POSTGRES_PASSWORD=databasePass
+            - POSTGRES_USER=userName
+            - POSTGRES_DB=flaskDB
+        volumes:
+            - database_info:/var/lib/postgresql/data
+        ports:
+            - '5432:5432'
+        image: postgres
+        
+    rabbitmq-flask:
+        hostname: rabbit-flask
+        container_name: rabbit-flask
+        image: 'rabbitmq:3.8-management'
+        ports:
+            - '15672:15672'
+            - '5672:5672'
+        volumes:
+            - rabbitmq_log:/var/log/rabbitmq
+            - rabbitmq_data:/var/lib/rabbitmq
+            
+volumes:
+    database_info:
+    rabbitmq_log:
+    rabbitmq_data:
