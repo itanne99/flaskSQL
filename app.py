@@ -1,26 +1,17 @@
 from flask import Flask, render_template, request
-from flask_sqlalchemy import SQLAlchemy
+from models import db, Student
 
 app = Flask(__name__)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 # Connection to DB
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://userName:databasePass@localhost/flaskDB'
-db = SQLAlchemy(app)
+db.init_app(app)
 
 
-# DB Model
-class Student(db.Model):
-    __tablename__ = 'students'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
-    first_name = db.Column(db.String(40))
-    last_name = db.Column(db.String(40))
-    year = db.Column(db.Integer)
-
-    def __init__(self, first_name, last_name, year):
-        self.first_name = first_name
-        self.last_name = last_name
-        self.year = year
+@app.before_first_request
+def create_table():
+    db.create_all()
 
 
 @app.route('/')
@@ -42,6 +33,7 @@ def submit():
         return "ERROR"
     return render_template('thanks.html')
 
+
 @app.route('/view')
 def view():
     return render_template('displayStudents.html', students=Student.query.order_by(Student.id).all())
@@ -59,6 +51,12 @@ def update(student_id):
         return render_template('update.html', studentInfo=Student.query.filter_by(id=student_id).first())
     return render_template('thanks.html')
 
+
+@app.route('/delete/<int:student_id>')
+def delete(student_id):
+    Student.query.filter_by(id=student_id).delete()
+    db.session.commit()
+    return render_template('thanks.html')
 
 
 if __name__ == '__main__':
