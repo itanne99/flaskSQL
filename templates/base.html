@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/mdb.dark.min.css') }}">
-    {% set navigation_bar = [('/','add','Add Student'),('/submit','viewStudents','View Students')] %}
+    {% set navigation_bar = [('/','add','Add Student'),('/view','viewStudents','View Students')] %}
     {% set active_page = active_page|default('add') -%}
 </head>
 <body>
