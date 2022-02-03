@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 from models import db, Student
+from readJSON import read_json
 
 app = Flask(__name__)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
@@ -12,6 +13,10 @@ db.init_app(app)
 @app.before_first_request
 def create_table():
     db.create_all()
+    if Student.query.count() == 0:
+        for student in read_json('media/students.json'):
+            db.session.add(Student(student['first_name'], student['last_name'], student['year']))
+            db.session.commit()
 
 
 @app.route('/')
@@ -60,4 +65,4 @@ def delete(student_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
