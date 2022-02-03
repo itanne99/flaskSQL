@@ -38,9 +38,27 @@ def submit():
         student = Student(first_name, last_name, year)
         db.session.add(student)
         db.session.commit()
-    if request.method == 'GET':
-        return render_template('displayStudents.html', students=Student.query.all())
+    else:
+        return "ERROR"
     return render_template('thanks.html')
+
+@app.route('/view')
+def view():
+    return render_template('displayStudents.html', students=Student.query.order_by(Student.id).all())
+
+
+@app.route('/update/<int:student_id>', methods=['GET', 'POST'])
+def update(student_id):
+    if request.method == 'POST':
+        studentInfo = Student.query.filter_by(id=student_id).first()
+        studentInfo.first_name = request.form['first_name']
+        studentInfo.last_name = request.form['last_name']
+        studentInfo.year = request.form['year']
+        db.session.commit()
+    if request.method == 'GET':
+        return render_template('update.html', studentInfo=Student.query.filter_by(id=student_id).first())
+    return render_template('thanks.html')
+
 
 
 if __name__ == '__main__':
